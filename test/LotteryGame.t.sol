@@ -2,12 +2,10 @@
 pragma solidity ^0.8.17;
 
 import "forge-std/Test.sol";
-import "../src/SampleGame.sol"; // change SampleGame to LotteryGame
+import "../src/LotteryGame.sol"; // corrected
 
-contract SampleGameTest is
-    Test // change SampleGame to LotteryGame
-{
-    SampleGame public game; // change SampleGame to LotteryGame
+contract LotteryGameTest is Test { // corrected
+    LotteryGame public game; // corrected
     address public owner;
     address public player1;
     address public player2;
@@ -24,7 +22,7 @@ contract SampleGameTest is
         vm.deal(player2, 1 ether);
         vm.deal(player3, 1 ether);
 
-        game = new SampleGame(); // change SampleGame to LotteryGame
+        game = new LotteryGame(); // corrected
     }
 
     function testRegisterWithCorrectAmount() public {
@@ -44,25 +42,19 @@ contract SampleGameTest is
     }
 
     function testGuessNumberInValidRange() public {
-        // Register player
         vm.startPrank(player1);
         game.register{value: 0.02 ether}();
-
-        // Make a valid guess
         game.guessNumber(5);
         vm.stopPrank();
 
-        // Check attempts were incremented
         (uint256 attempts,) = game.players(player1);
         assertEq(attempts, 1);
     }
 
     function testGuessNumberOutOfRange() public {
-        // Register player
         vm.startPrank(player1);
         game.register{value: 0.02 ether}();
 
-        // Try to guess with invalid numbers
         vm.expectRevert("Number must be between 1 and 9");
         game.guessNumber(0);
 
@@ -79,15 +71,11 @@ contract SampleGameTest is
     }
 
     function testPlayerLimitedToTwoAttempts() public {
-        // Register player
         vm.startPrank(player1);
         game.register{value: 0.02 ether}();
-
-        // Make two guesses
         game.guessNumber(5);
         game.guessNumber(6);
 
-        // Try to make a third guess
         vm.expectRevert("Player has already made 2 attempts");
         game.guessNumber(7);
 
